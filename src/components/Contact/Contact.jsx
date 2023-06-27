@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import css from './Contact.module.css';
+
 export const Contact = ({ name, number, deleteContact, id }) => {
   return (
     <div className={css.contact}>

@@ -1,77 +1,81 @@
+import { useState } from 'react';
 import { nanoid } from 'nanoid';
 import PropTypes from 'prop-types';
-import { Component } from 'react';
 import css from './ContactForm.module.css';
 
-export class ContactForm extends Component {
-  state = {
-    name: '',
-    number: '',
+export function ContactForm({ contacts, addContact }) {
+  const [name, setName] = useState('');
+  const [number, setNumber] = useState('');
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    if (name === 'name') {
+      setName(value);
+    } else if (name === 'number') {
+      setNumber(value);
+    }
   };
 
-  handleInputChange = e => {
-    this.setState({
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  handleSubmit = e => {
-    const { name, number } = this.state;
+  const handleSubmit = (e) => {
     e.preventDefault();
-    this.props.contacts.find(contact => contact.name === name)
-      ? alert(`${this.state.name} is already in contacts`)
-      : this.props.addContact(name, number);
-    this.setState({ name: '', number: '' });
+    const isContactExists = contacts.some((contact) => contact.name === name);
+
+    if (isContactExists) {
+      alert(`${name} is already in contacts`);
+    } else {
+      addContact(name, number);
+    }
+
+    setName('');
+    setNumber('');
   };
 
-  render() {
-    const { name, number } = this.state;
-    const nameInputId = nanoid();
-    const numberImputId = nanoid();
-    return (
-      <div>
-        <form onSubmit={this.handleSubmit} className={css.form}>
-          <div className={css.nameInput}>
-            <label htmlFor={nameInputId} className={css.label}>
-              Name
-            </label>
-            <input
-              id={nameInputId}
-              type="text"
-              name="name"
-              value={name}
-              onChange={this.handleInputChange}
-              pattern="^[a-zA-Z\s]+$"
-              title="Name may contain only latin letters"
-              required
-              className={css.input}
-            />
-          </div>
-          <div className={css.numberInput}>
-            <label htmlFor={numberImputId} className={css.label}>
-              Number
-            </label>
-            <input
-              id={numberImputId}
-              type="tel"
-              name="number"
-              value={number}
-              onChange={this.handleInputChange}
-              pattern="^\d{3}-\d{2}-\d{2}$"
-              // pattern="^[0-9]+-[0-9]+-[0-9]+$"
-              title="The phone number should look like this: 012-34-56"
-              required
-              className={css.input}
-            />
-          </div>
+  const nameInputId = nanoid();
+  const numberInputId = nanoid();
 
-          <button type="submit" className={css.btnAddContact}>
-            Add contact
-          </button>
-        </form>
-      </div>
-    );
-  }
+  return (
+    <div>
+      <form onSubmit={handleSubmit} className={css.form}>
+        <div className={css.nameInput}>
+          <label htmlFor={nameInputId} className={css.label}>
+            Name
+          </label>
+          <input
+            id={nameInputId}
+            type="text"
+            autoComplete="off"
+            name="name"
+            value={name}
+            onChange={handleInputChange}
+            pattern="^[a-zA-Z\s]+$"
+            title="Name may contain only latin letters"
+            required
+            className={css.input}
+          />
+        </div>
+        <div className={css.numberInput}>
+          <label htmlFor={numberInputId} className={css.label}>
+            Number
+          </label>
+          <input
+            id={numberInputId}
+            type="tel"
+            name="number"
+            value={number}
+            onChange={handleInputChange}
+            pattern="^\d{3}-\d{2}-\d{2}$"
+            title="The phone number should look like this: 012-34-56"
+            required
+            className={css.input}
+          />
+        </div>
+
+        <button type="submit" className={css.btnAddContact}>
+          Add contact
+        </button>
+      </form>
+    </div>
+  );
 }
 
 ContactForm.propTypes = {
